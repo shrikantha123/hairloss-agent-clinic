@@ -287,9 +287,9 @@ body.menu-open {
 
 .hero-image img {
   width: 100%;
-  height: auto;
-  max-height: 480px;
-  max-width: 600px;
+  height: 100%;
+  max-height: 360px;
+  max-width: 480px;
   object-fit: cover;
   border-radius: 20px;
   box-shadow: var(--shadow);
@@ -324,10 +324,10 @@ body.menu-open {
 }
 
 .hero-content h1 {
-  font-size: clamp(28px, 5.5vw, 48px);
+  font-size: clamp(32px, 6vw, 56px);
   font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 20px;
+  line-height: 1.25;
+  margin-bottom: 25px;
   color: var(--text-dark);
 }
 
@@ -337,9 +337,9 @@ body.menu-open {
 
 .hero-content p {
   color: var(--text-light);
-  font-size: clamp(15px, 2.5vw, 18px);
-  margin-bottom: 30px;
-  max-width: 480px;
+  font-size: clamp(16px, 2.5vw, 20px);
+  margin-bottom: 35px;
+  max-width: 540px;
 }
 
 .hero-btns {
@@ -503,6 +503,7 @@ body.menu-open {
   font-size: 14px;
   color: var(--text-light);
   margin-bottom: 20px;
+  flex-grow: 1;
 }
 
 .service-card .btn-link {
