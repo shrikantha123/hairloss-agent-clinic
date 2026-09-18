@@ -1,0 +1,42 @@
+# Environment & Secrets
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Databases
+*.db
+*.sqlite3
+hair-loss-agent/data/
+
+# Logs
+*.log
+logs/
+hair-loss-agent/logs/
+
+# IDE
+.vscode/
+.idea/
+.cursorignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# pytest
+.pytest_cache/
+
+# Old src folder (moved to hair-loss-agent/backend)
+src/

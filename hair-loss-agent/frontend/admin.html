@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Anarva Clinic</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header h1 {
+      color: #009688;
+      margin-bottom: 10px;
+    }
+
+    .login-section {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: 50px auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .login-section input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .login-section button {
+      width: 100%;
+      padding: 12px;
+      background: #009688;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .patients-table {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: #009688;
+      color: white;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: #f9f9f9;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+
+    .btn-view {
+      background: #2196F3;
+      color: white;
+    }
+
+    .btn-delete {
+      background: #f44336;
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 800px;
+      margin: 50px auto;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .close {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .report-data {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .patient-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .info-card {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .info-card label {
+      display: block;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .info-card span {
+      font-size: 16px;
+      color: #333;
+    }
+
+    .section-title {
+      background: #009688;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin: 20px 0 15px 0;
+      font-size: 16px;
+    }
+
+    .quiz-item {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+
+    .quiz-question {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .quiz-answer {
+      color: #009688;
+      font-weight: 500;
+    }
+
+    .report-section {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+    }
+
+    .report-section h4 {
+      color: #009688;
+      margin-bottom: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fa-solid fa-user-shield"></i> Admin Panel - Patient Data</h1>
+      <p>View and manage patient assessment reports</p>
+    </div>
+
+    <!-- Login Section -->
+    <div id="loginSection" class="login-section">
+      <h2>Admin Login</h2>
+      <input type="password" id="adminSecret" placeholder="Enter admin secret" />
+      <button onclick="login()">Login</button>
+      <p id="loginError" style="color: red; margin-top: 10px; display: none;">Invalid secret</p>
+    </div>
+
+    <!-- Patients Table -->
+    <div id="patientsSection" class="patients-table hidden">
+      <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <h2>Patient Records</h2>
+        <button class="btn" style="background: #009688; color: white;" onclick="loadPatients()">
+          <i class="fa-solid fa-refresh"></i> Refresh
+        </button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Age</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="patientsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Patient Details Modal -->
+  <div id="patientModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Patient Details</h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div id="patientDetails"></div>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_SECRET = 'admin123';
+    let currentSecret = '';
+
+    function login() {
+      const secret = document.getElementById('adminSecret').value;
+      if (secret === ADMIN_SECRET) {
+        currentSecret = secret;
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('patientsSection').classList.remove('hidden');
+        loadPatients();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    }
+
+    async function loadPatients() {
+      try {
+        const response = await fetch(`/api/patients/?admin_secret=${currentSecret}`);
+        const patients = await response.json();
+        
+        const tbody = document.getElementById('patientsTableBody');
+        tbody.innerHTML = '';
+        
+        patients.forEach(patient => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${patient.id}</td>
+            <td>${patient.name}</td>
+            <td>${patient.email}</td>
+            <td>${patient.phone}</td>
+            <td>${patient.age}</td>
+            <td>${new Date(patient.created_at).toLocaleDateString()}</td>
+            <td>
+              <button class="btn btn-view" onclick="viewPatient(${patient.id})">
+                <i class="fa-solid fa-eye"></i> View
+              </button>
+              <button class="btn btn-delete" onclick="deletePatient(${patient.id})">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        alert('Error loading patients: ' + error.message);
+      }
+    }
+
+    async function viewPatient(id) {
+      try {
+        const response = await fetch(`/api/patients/${id}?admin_secret=${currentSecret}`);
+        const patient = await response.json();
+        
+        const details = document.getElementById('patientDetails');
+        
+        // Parse quiz answers if available
+        let quizHTML = '<p>No quiz data available</p>';
+        if (patient.quiz_answers) {
+          try {
+            const quizData = JSON.parse(patient.quiz_answers);
+            if (quizData.quizdata && Array.isArray(quizData.quizdata)) {
+              quizHTML = quizData.quizdata.map((q, index) => `
+                <div class="quiz-item">
+                  <div class="quiz-question">Q${index + 1}: ${q.question}</div>
+                  <div class="quiz-answer">Answer: ${q.answer}</div>
+                </div>
+              `).join('');
+            } else {
+              quizHTML = `<div class="report-data">${patient.quiz_answers}</div>`;
+            }
+          } catch (e) {
+            quizHTML = `<div class="report-data">${patient.quiz_answers}</div>`;
+          }
+        }
+        
+        // Parse report data if available
+        let reportHTML = '<p>No report data available</p>';
+        if (patient.report_data) {
+          try {
+            const reportData = JSON.parse(patient.report_data);
+            reportHTML = `
+              <div class="report-section">
+                <h4><i class="fa-solid fa-user"></i> Patient Details</h4>
+                <p><strong>Name:</strong> ${reportData.patient_details?.name || 'N/A'}</p>
+                <p><strong>Gender:</strong> ${reportData.patient_details?.gender || 'N/A'}</p>
+                <p><strong>Age:</strong> ${reportData.patient_details?.age || 'N/A'}</p>
+              </div>
+              <div class="report-section">
+                <h4><i class="fa-solid fa-chart-area"></i> Density Score</h4>
+                <p><strong>Overall:</strong> ${reportData.zone_density?.overall_density_score || 'N/A'}/100</p>
+                <p><strong>Summary:</strong> ${reportData.zone_density?.overall_summary || 'N/A'}</p>
+              </div>
+              <div class="report-section">
+                <h4><i class="fa-solid fa-stethoscope"></i> Hair Loss Stage</h4>
+                <p><strong>Norwood Stage:</strong> ${reportData.hair_loss_stage?.norwood_stage || 'N/A'}</p>
+                <p><strong>Title:</strong> ${reportData.hair_loss_stage?.stage_title || 'N/A'}</p>
+                <p>${reportData.hair_loss_stage?.description || 'N/A'}</p>
+              </div>
+              <div class="report-section">
+                <h4><i class="fa-solid fa-heart-pulse"></i> Root Causes</h4>
+                ${reportData.root_causes?.map(cause => `
+                  <p><strong>${cause.cause}:</strong> ${cause.percentage}% - ${cause.reason}</p>
+                `).join('') || '<p>N/A</p>'}
+              </div>
+              <div class="report-section">
+                <h4><i class="fa-solid fa-pills"></i> Recommended Products</h4>
+                ${reportData.recommended_products?.map(prod => `
+                  <p><strong>${prod.product}:</strong> ${prod.type} - ${prod.rationale}</p>
+                `).join('') || '<p>N/A</p>'}
+              </div>
+              <div class="report-section">
+                <h4><i class="fa-solid fa-exclamation-triangle"></i> Things to Avoid</h4>
+                ${reportData.things_to_avoid?.map(item => `<p>• ${item}</p>`).join('') || '<p>N/A</p>'}
+              </div>
+              <div class="report-section">
+                <h4><i class="fa-solid fa-calendar"></i> Consultation Urgency</h4>
+                <p>${reportData.consultation_urgency || 'N/A'}</p>
+              </div>
+            `;
+          } catch (e) {
+            reportHTML = `<div class="report-data">${patient.report_data}</div>`;
+          }
+        }
+        
+        details.innerHTML = `
+          <div class="patient-info-grid">
+            <div class="info-card">
+              <label>Patient Name</label>
+              <span>${patient.name}</span>
+            </div>
+            <div class="info-card">
+              <label>Email</label>
+              <span>${patient.email}</span>
+            </div>
+            <div class="info-card">
+              <label>Phone</label>
+              <span>${patient.phone || 'N/A'}</span>
+            </div>
+            <div class="info-card">
+              <label>Age</label>
+              <span>${patient.age}</span>
+            </div>
+            <div class="info-card">
+              <label>Created</label>
+              <span>${new Date(patient.created_at).toLocaleString()}</span>
+            </div>
+          </div>
+          
+          <div class="section-title"><i class="fa-solid fa-clipboard-question"></i> Quiz Answers</div>
+          ${quizHTML}
+          
+          <div class="section-title"><i class="fa-solid fa-file-medical"></i> AI Report</div>
+          ${reportHTML}
+        `;
+        
+        document.getElementById('patientModal').style.display = 'block';
+      } catch (error) {
+        alert('Error loading patient details: ' + error.message);
+      }
+    }
+
+    async function deletePatient(id) {
+      if (!confirm('Are you sure you want to delete this patient record?')) return;
+      
+      try {
+        const response = await fetch(`/api/patients/${id}?admin_secret=${currentSecret}`, {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          alert('Patient deleted successfully');
+          loadPatients();
+        } else {
+          alert('Error deleting patient');
+        }
+      } catch (error) {
+        alert('Error deleting patient: ' + error.message);
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('patientModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('patientModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+</html>
